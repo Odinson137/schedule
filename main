@@ -59,7 +59,6 @@ def new_users(message):
 
 @bot.message_handler(commands=['date_update'])
 def update_date(message, value_day='chisl'):
-    # if message.from_user.id == admin_id:
         if value_day == 'chisl':
             value_2 = 'znam'
         else:
@@ -166,8 +165,6 @@ def schedule(message):
 def days_(message):
         homeworks().clear()
 
-        print('agsdshzjh', for_dop_delet())
-
         deleter(message)
 
         keyboard = InlineKeyboardMarkup(row_width=3)
@@ -257,12 +254,6 @@ def homework(message):
     if message.from_user.id in holy_mans:
         new_users(message)
         users()[message.from_user.first_name].clear()
-        # users()[message.from_user.first_name].clear()
-
-        # if message.content_type == 'photo':
-        #     bot.send_message(message.chat.id, 'photo')
-
-        
         if message.text:
             if len(message.text) > 499:
                 bot.send_message(message.from_user.id, "Домашка слишком большая. Пиши меньше либо её нет")
@@ -286,14 +277,12 @@ def homework(message):
 
         global c
         c = True
-    # except: print('error')
 
 @bot.message_handler()
 def homework(message):
     if message.from_user.id in holy_mans():
         users()[message.from_user.first_name].clear()
         print(message)
-        # try:
         if message.text:
             if re.match(r'^\/\d+', message.text):
                 bot.send_message(admin_id, 'Удалено')
