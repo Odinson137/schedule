@@ -3,7 +3,6 @@ def deleter(message):
         if len(for_home()) != 0:
             for_home().clear()
 
-        # if delet_photo():
         if users():
             if message.from_user.first_name in users().keys():
                 if len(users()[message.from_user.first_name]) != 0:
