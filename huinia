@@ -1,1 +1,28 @@
+def users(sl = {}):
+    return sl
 
+def delet_photo(sp = []):
+    return sp
+
+
+def for_dop_delet(sp = []):
+    return sp
+
+def for_text(spisok = []):
+    if len(spisok) > 1:
+        del spisok[0]
+    return spisok
+
+def for_home(spisok = []):
+    return spisok
+
+def id_photo(sp = []):
+    if len(sp) > 1:
+        del sp[0]
+    return sp
+
+def photo_dop(sl = {1:2}):
+    return sl
+
+def homeworks(sl = {}):
+    return sl
