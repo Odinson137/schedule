@@ -1,0 +1,470 @@
+def deleter(message):
+    # try:
+        # if len(for_dop_delet()) > 0:
+        #     print('asd')
+        #     try:
+        #         for dops in for_dop_delet():
+        #             bot.delete_message(chat_id=message.from_user.id, message_id=dops)
+        #             del for_dop_delet()[0]
+        #     except: pass
+            
+        if len(for_home()) != 0:
+            # del for_home()[:]
+            for_home().clear()
+
+        # if delet_photo():
+        #     for ph in delet_photo():
+        #         bot.delete_message(chat_id=message.from_user.id, message_id=ph)
+        #     # del delet_photo()[:]
+        #     delet_photo().clear()
+        # print(users()[message.from_user.first_name])
+        if users():
+            if message.from_user.first_name in users().keys():
+                if len(users()[message.from_user.first_name]) != 0:
+                    for d in users()[message.from_user.first_name]:
+                        print(d)
+                        try:
+                            bot.delete_message(chat_id=message.from_user.id, message_id=d)
+                        except: pass
+                    users()[message.from_user.first_name].clear()
+    # except: 
+    #     bot.send_message(1116709501, f'ошибка при удалении у {message.from_user.first_name}')
+
+@bot.message_handler(commands=['users'])
+def useres(message):
+    new_users(message)
+    users()[message.from_user.first_name].clear()
+    select = " SELECT user_name, id_3 FROM users "
+    bot.send_message(1116709501, message.from_user.first_name)
+    cur.execute(select)
+    x = cur.fetchall()
+    print(x)
+    for i in x:
+        bot.send_message(message.chat.id, f"{i[0]} - id {i[1]}")
+
+@bot.message_handler(commands=['all'])
+def all_homses(message):
+    new_users(message)
+    users()[message.from_user.first_name].clear()
+    for i in items:
+        insert = " SELECT homework FROM homework WHERE item = %s or item = %s "
+        values = i, i
+        cur.execute(insert, values)
+        bot.send_message(message.chat.id, f"{i} - {cur.fetchone()[0]}")
+    conn.commit()
+    # conn.close()
+    # cur.close()
+
+@bot.message_handler(commands=["affairs"])
+def affairs(message):
+    new_users(message)
+    users()[message.from_user.first_name].clear()
+    select = " SELECT affair FROM affairs "
+    cur.execute(select)
+    affairs = cur.fetchall()
+    nums = 1
+    for affair in affairs:
+        print(affair)
+        bot.send_message(message.chat.id, f"{nums}) {affair[0]}")
+        nums += 1
+
+
+def new_users(message):
+    if message.from_user.first_name not in users().keys():
+        bot.send_message(admin_id, f'New NOOB - {message.from_user.first_name}')
+        users().update({message.from_user.first_name: []})
+        # print(users()[message.from_user.first_name])
+        print(users())
+
+@bot.message_handler(commands=['date_update'])
+def update_date(message, value_day='chisl'):
+    # if message.from_user.id == admin_id:
+        if value_day == 'chisl':
+            value_2 = 'znam'
+        else:
+            value_2 = 'chisl'
+        today = datetime.date.today()
+
+        nums = 0
+        for i in days:
+            tomorrow = today + datetime.timedelta(days=nums)
+            update = " UPDATE schedule_day set date = %s WHERE day = %s and value = %s"
+            value = tomorrow, i, value_day
+            print(value)
+            cur.execute(update, value)
+            
+            nums += 1
+
+        nums = 7
+        for i in days:
+            tomorrow = today + datetime.timedelta(days=nums)
+            update = " UPDATE schedule_day set date = %s WHERE day = %s and value = %s"
+            value = tomorrow, i, value_2
+            print(value)
+            cur.execute(update, value)
+            
+            nums += 1
+        bot.send_message(admin_id, 'Time is updating...')
+        conn.commit()
+
+@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['schedule'])
+def schedule(message):
+    
+    deleter(message)
+
+    new_users(message)
+    users()[message.from_user.first_name].clear()
+
+    try:
+        if len(users()[message.from_user.first_name]) != 0:
+            bot.delete_message(chat_id=message.from_user.id, message_id=users()[message.from_user.first_name][0])
+            del users()[message.from_user.first_name][0]
+    except: 
+        print('error')
+    print(message.from_user.first_name)
+    try:
+        select = " SELECT user_name FROM users WHERE user_name = %s and user_name = %s "
+        value = message.from_user.first_name, message.from_user.first_name
+        cur.execute(select, value)
+        x = cur.fetchone()
+        print(x)
+        if not x:
+            
+            insert = " INSERT INTO users (user_name, id_3) VALUES (%s, %s)"
+            values = message.from_user.first_name, message.chat.id
+            cur.execute(insert, values)
+            conn.commit()
+    except: pass
+
+    keyboard = InlineKeyboardMarkup(row_width=3)
+    kb = InlineKeyboardButton(text='Числитель', callback_data='chisl')
+    kb_1 = InlineKeyboardButton(text='Знаменатель', callback_data='znam')
+    keyboard.add(kb, kb_1)
+    print(days)
+
+    today = datetime.date.today()
+    select = " SELECT (day, value) FROM schedule_day WHERE date = %s or date = %s "
+    value = today, today
+    cur.execute(select, value)
+    x = cur.fetchone()
+    if x:
+        print(x[0])
+        val =  list(x[0].split(',')) 
+        print(val)
+        print(x)
+    else:
+        val = ['Воскресенье', 'ha']
+
+        
+    for day in days:
+        if val[0][1:] == day:
+            # val[0] = 'Понедельник'
+            if val[1][:-1] == 'chisl':
+                if message.from_user.id == admin_id:
+                    update_date('chisl')
+
+                kb_1 = InlineKeyboardButton(text='Today', callback_data=day + str(1))
+                kb_2 = InlineKeyboardButton(text=day, callback_data=day + str(2))
+            # elif val[1][:-1] == 'znam':
+            else:
+                if message.from_user.id == admin_id:
+                    update_date('znam')
+                kb_1 = InlineKeyboardButton(text=day, callback_data=day + str(1))
+                kb_2 = InlineKeyboardButton(text='Today', callback_data=day + str(2))        
+        else:
+            kb_1 = InlineKeyboardButton(text=day, callback_data=day + str(1))
+            kb_2 = InlineKeyboardButton(text=day, callback_data=day + str(2))
+        keyboard.add(kb_1, kb_2)
+
+    delet = bot.send_message(message.chat.id, 'Расписание:', reply_markup=keyboard)
+    # users()[message.from_user.first_name].append(delet.id)
+    
+    # if len(users()[message.from_user.first_name]) == 0:
+    #     users()[message.from_user.first_name].append(x.id)
+    print(users())
+    # else:
+    #     users()[message.from_user.first_name]
+
+# else:
+#     keyboard.add(kb_1, kb_2)
+
+@bot.callback_query_handler(func=lambda message: message.data[:-1] in days)
+def days_(message):
+    # try:
+        homeworks().clear()
+
+        print('agsdshzjh', for_dop_delet())
+
+        deleter(message)
+
+        keyboard = InlineKeyboardMarkup(row_width=3)
+
+        # markups = types.ReplyKeyboardRemove(selective=False)
+        # print(id_chat()[0], for_delet())
+        p = [1]
+        # bot.send_message(1116709501, f"{message.data[:-1]}:", reply_markup=markup)
+        
+
+        
+        for num in range(1, 6):
+            
+            select = " SELECT item_" +  str(num) + " FROM schedule_day WHERE day = %s and value = %s"
+            if str(1) in message.data:
+                p[0] = ('chisl')
+            if str(2) in message.data:
+                p[0] = 'znam'
+
+            value = message.data[:-1], p[-1]
+            cur.execute(select, value)
+            try:
+                x = cur.fetchone()
+                print(x)
+            except:
+                bot.send_message(1116709501, f'ошибка у {message.from_user.first_name}')
+                x = ['ничего']
+
+            if x == None:
+                pass
+            else:
+                
+                x = x[0]
+
+                if x != None:
+                    kb = InlineKeyboardButton(text=str(num) + ") " + x, callback_data=x)
+                    if x == 'физра':
+                        kb_2 = InlineKeyboardButton(text='как всегда', callback_data='ничего')
+                        keyboard.add(kb, kb_2)
+                    else:
+                        select = " SELECT homework FROM homework WHERE item = %s or item = %s "
+                        value = x, x
+                        cur.execute(select, value)
+                        # try:
+                        #     home = cur.fetchone()[0]
+                        # 
+                        try:
+                            home  = cur.fetchone()
+                        except: home = ['ничегос']
+
+                        print(home)
+                        if home:
+                            home = home[0]
+                            # bot.send_message(id_chat()[0], x + '\n' + home)
+                            # print(home)
+                            print(home)
+                            print(len(home))
+                            kb_2 = InlineKeyboardButton(text=home, callback_data=x)
+                            # bot.send_message(id_chat()[0], home)
+                            # keyboard.add(kb_2)
+
+                            keyboard.add(kb, kb_2)
+
+                            homeworks().update({x: home})
+
+                            select = " SELECT photo FROM homework WHERE item = %s or item = %s "
+
+                            value = x, x
+                            cur.execute(select, value)
+                            print(value)
+                            zet = cur.fetchone()[0]
+                            print(zet)
+                            
+                            if zet:
+                                photo_dop().update({x: zet})
+
+
+                        else:
+                            kb_2 = InlineKeyboardButton(text='ничего', callback_data='ничего')
+
+                            keyboard.add(kb, kb_2)
+    # except:
+    #     bot.send_message(admin_id, f'Большой трай у {message.from_user.first_name}')
+
+                    # keyboard.add()
+        print(homeworks())
+        delet = bot.send_message(message.from_user.id, f"{message.data[:-1]}", reply_markup=keyboard)
+        users()[message.from_user.first_name].append(delet.id)
+    # x = bot.pin_chat_message(message.from_user.id, message_id=delet.id, disable_notification=None)
+    
+        print(x)
+    # bot.set_chat_administrator_custom_title(message.from_user.id, custom_title=True, user_id=1116709501)
+    # bot.delete_message(chat_id=message.from_user.id, message_id=x.id)
+        # , reply_markup=keyboard
+    # for_delet().append(delet.message_id)
+
+
+
+@bot.message_handler(content_types= ["photo"])
+@bot.message_handler()
+def homework(message):
+    if message.from_user.id in holy_mans:
+        new_users(message)
+        users()[message.from_user.first_name].clear()
+        # users()[message.from_user.first_name].clear()
+
+        # if message.content_type == 'photo':
+        #     bot.send_message(message.chat.id, 'photo')
+
+        
+        if message.text:
+            if len(message.text) > 499:
+                bot.send_message(message.from_user.id, "Домашка слишком большая. Пиши меньше либо её нет")
+                return
+        
+        keyboard = InlineKeyboardMarkup(row_width=2)
+        # select = " SELECT item FROM homework "
+        # cur.execute(select)
+        # item = cur.fetchall()
+        for i in items:
+            kb = InlineKeyboardButton(text=i, callback_data=i)
+            keyboard.add(kb)
+        kb_1 = InlineKeyboardButton(text='вернуться назад', callback_data='return')
+        kb_2 = InlineKeyboardButton(text='что-то важное', callback_data='affair')
+        keyboard.add(kb_1, kb_2)
+        # if message.text:
+        delet = bot.send_message(message.chat.id, 'Выберите предмет: ', reply_markup=keyboard)
+        new_users(message)
+        users()[message.from_user.first_name].append(delet.id)
+        # for_delet().append(delet.message_id)
+        if message.text:
+            for_text().append(message.text)
+        else:
+            id_photo().append(message.id)
+        # else:
+        #     delet = bot.send_message(1116709501, 'Выберите предмет: ', reply_markup=keyboard)
+        #     for_delet().append(delet.message_id)
+
+
+        global c
+        c = True
+    # except: print('error')
+
+@bot.message_handler()
+def homework(message):
+    if message.from_user.id in holy_mans():
+        users()[message.from_user.first_name].clear()
+        print(message)
+        # try:
+        if message.text:
+            if re.match(r'^\/\d+', message.text):
+                bot.send_message(admin_id, 'Удалено')
+
+@bot.callback_query_handler(func=lambda message: message.data == 'affair')
+def get_affair(message):
+    insert = " INSERT INTO affairs (affair) VALUES ('" + for_text()[0] + "') "
+    cur.execute(insert)
+    conn.commit()
+    try:
+        bot.delete_message(chat_id=message.from_user.id, message_id=users()[message.from_user.first_name][0])
+    except:
+        bot.send_message(admin_id, 'Error')
+    bot.send_message(message.from_user.id, f"Добавлено в важные '{for_text()[0]}'")
+    for_text().clear()
+
+
+@bot.callback_query_handler(func=lambda message: message.data == 'return')
+def returs(message):
+    try:
+        bot.delete_message(chat_id=message.from_user.id, message_id=users()[message.from_user.first_name][0])
+
+    # del for_text()[0]
+        for_text().clear()
+        # del for_delet()[0]
+
+        users()[message.from_user.first_name].clear()
+
+    except:
+        bot.send_message(message.from_user.id, 'Время вышло')
+    # for_delet().clear()
+    global c
+    c = False
+
+
+@bot.callback_query_handler(func=lambda message: message.data in photo_dop().keys() and c == False)
+def photo_dop_home(message):
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    
+    try:
+        delet = bot.forward_message(message.from_user.id, 1116709501, message_id=photo_dop()[message.data])
+        kb = InlineKeyboardButton(text='Удалить!', callback_data='deleter-'+str(photo_dop()[message.data]))
+        keyboard.add(kb)
+
+        delet_2 = bot.send_message(holy_mans[0], 'DELET PHOTO!', reply_markup=keyboard)
+        new_users(message)
+        users()[message.from_user.first_name].append(delet.id)
+
+        # dop_delet().append(delet.id)
+        delet = bot.send_message(message.from_user.id, homeworks()[message.data])
+        users()[message.from_user.first_name].append(delet.id)
+        users()[message.from_user.first_name].append(delet_2.id)
+
+    except:
+        bot.send_message(1116709501, f'Ошибка при отправке фотки у {message.from_user.first_name}')
+
+@bot.callback_query_handler(func=lambda message: 'deleter' in message.data)
+def deleter_photo_dz(message):
+    update = " UPDATE homework set photo = %s WHERE photo = %s "
+    value = None, message.data[8:] 
+    cur.execute(update, value)
+    conn.commit()
+    delet = bot.send_message(admin_id, 'Удалено')
+    new_users(message)
+    users()[message.from_user.first_name].append(delet.id)
+
+@bot.callback_query_handler(func=lambda message: message.data in homeworks().keys() and c == False)
+def home_podrob(message):
+    print(homeworks())
+    delet = bot.send_message(message.from_user.id, homeworks()[message.data])
+    new_users(message)
+    users()[message.from_user.first_name].append(delet.id)
+
+    # dop_delet().append(delet.id)
+    
+
+
+
+@bot.callback_query_handler(func=lambda message: message.data in items and c == True)
+def homeworker(message):
+    print(message.data)
+    # delete_message()
+    # users()[message.from_user.first_name].clear()
+    print(users())
+    # if users()[message.from_user.first_name]:
+    try:
+        bot.delete_message(chat_id=message.from_user.id, message_id=users()[message.from_user.first_name][0])
+    except: pass
+    users()[message.from_user.first_name].clear()
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=1)
+    item_schedule = types.KeyboardButton('/schedule')
+    markup.add(item_schedule)
+    if id_photo():
+        update = " UPDATE homework set photo = %s WHERE item = %s "
+        value = id_photo()[0], message.data
+        bot.send_message(message.from_user.id, f"Фото для предмета '{message.data.title()}' добавлено в дневник", reply_markup=markup)
+        del id_photo()[0]
+    elif for_text():
+        update = " UPDATE homework set homework = %s WHERE item = %s "
+        value = for_text()[0], message.data
+        bot.send_message(message.from_user.id, f"Задание '{for_text()[0]}' по предмету \n'{message.data.title()}' добавлено в дневник", reply_markup=markup)
+        del for_text()[0]
+    
+    cur.execute(update, value)
+    conn.commit()
+
+
+    
+
+    # del for_delet()[0]
+    
+    
+
+    global c
+    c = False
+
+
+
+
+# try:
+bot.polling(none_stop=False)
+# except:
+#     time.sleep(5)
