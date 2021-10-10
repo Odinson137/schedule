@@ -1,23 +1,9 @@
 def deleter(message):
-    # try:
-        # if len(for_dop_delet()) > 0:
-        #     print('asd')
-        #     try:
-        #         for dops in for_dop_delet():
-        #             bot.delete_message(chat_id=message.from_user.id, message_id=dops)
-        #             del for_dop_delet()[0]
-        #     except: pass
-            
+          
         if len(for_home()) != 0:
-            # del for_home()[:]
             for_home().clear()
 
         # if delet_photo():
-        #     for ph in delet_photo():
-        #         bot.delete_message(chat_id=message.from_user.id, message_id=ph)
-        #     # del delet_photo()[:]
-        #     delet_photo().clear()
-        # print(users()[message.from_user.first_name])
         if users():
             if message.from_user.first_name in users().keys():
                 if len(users()[message.from_user.first_name]) != 0:
@@ -27,15 +13,13 @@ def deleter(message):
                             bot.delete_message(chat_id=message.from_user.id, message_id=d)
                         except: pass
                     users()[message.from_user.first_name].clear()
-    # except: 
-    #     bot.send_message(1116709501, f'ошибка при удалении у {message.from_user.first_name}')
 
 @bot.message_handler(commands=['users'])
 def useres(message):
     new_users(message)
     users()[message.from_user.first_name].clear()
     select = " SELECT user_name, id_3 FROM users "
-    bot.send_message(1116709501, message.from_user.first_name)
+    bot.send_message(admin_id, message.from_user.first_name)
     cur.execute(select)
     x = cur.fetchall()
     print(x)
@@ -52,8 +36,6 @@ def all_homses(message):
         cur.execute(insert, values)
         bot.send_message(message.chat.id, f"{i} - {cur.fetchone()[0]}")
     conn.commit()
-    # conn.close()
-    # cur.close()
 
 @bot.message_handler(commands=["affairs"])
 def affairs(message):
@@ -159,7 +141,6 @@ def schedule(message):
         
     for day in days:
         if val[0][1:] == day:
-            # val[0] = 'Понедельник'
             if val[1][:-1] == 'chisl':
                 if message.from_user.id == admin_id:
                     update_date('chisl')
@@ -178,20 +159,12 @@ def schedule(message):
         keyboard.add(kb_1, kb_2)
 
     delet = bot.send_message(message.chat.id, 'Расписание:', reply_markup=keyboard)
-    # users()[message.from_user.first_name].append(delet.id)
     
-    # if len(users()[message.from_user.first_name]) == 0:
-    #     users()[message.from_user.first_name].append(x.id)
     print(users())
-    # else:
-    #     users()[message.from_user.first_name]
 
-# else:
-#     keyboard.add(kb_1, kb_2)
 
 @bot.callback_query_handler(func=lambda message: message.data[:-1] in days)
 def days_(message):
-    # try:
         homeworks().clear()
 
         print('agsdshzjh', for_dop_delet())
@@ -200,10 +173,7 @@ def days_(message):
 
         keyboard = InlineKeyboardMarkup(row_width=3)
 
-        # markups = types.ReplyKeyboardRemove(selective=False)
-        # print(id_chat()[0], for_delet())
         p = [1]
-        # bot.send_message(1116709501, f"{message.data[:-1]}:", reply_markup=markup)
         
 
         
@@ -239,9 +209,7 @@ def days_(message):
                         select = " SELECT homework FROM homework WHERE item = %s or item = %s "
                         value = x, x
                         cur.execute(select, value)
-                        # try:
-                        #     home = cur.fetchone()[0]
-                        # 
+                        
                         try:
                             home  = cur.fetchone()
                         except: home = ['ничегос']
@@ -277,22 +245,12 @@ def days_(message):
                             kb_2 = InlineKeyboardButton(text='ничего', callback_data='ничего')
 
                             keyboard.add(kb, kb_2)
-    # except:
-    #     bot.send_message(admin_id, f'Большой трай у {message.from_user.first_name}')
 
-                    # keyboard.add()
         print(homeworks())
         delet = bot.send_message(message.from_user.id, f"{message.data[:-1]}", reply_markup=keyboard)
         users()[message.from_user.first_name].append(delet.id)
-    # x = bot.pin_chat_message(message.from_user.id, message_id=delet.id, disable_notification=None)
     
         print(x)
-    # bot.set_chat_administrator_custom_title(message.from_user.id, custom_title=True, user_id=1116709501)
-    # bot.delete_message(chat_id=message.from_user.id, message_id=x.id)
-        # , reply_markup=keyboard
-    # for_delet().append(delet.message_id)
-
-
 
 @bot.message_handler(content_types= ["photo"])
 @bot.message_handler()
@@ -312,27 +270,19 @@ def homework(message):
                 return
         
         keyboard = InlineKeyboardMarkup(row_width=2)
-        # select = " SELECT item FROM homework "
-        # cur.execute(select)
-        # item = cur.fetchall()
         for i in items:
             kb = InlineKeyboardButton(text=i, callback_data=i)
             keyboard.add(kb)
         kb_1 = InlineKeyboardButton(text='вернуться назад', callback_data='return')
         kb_2 = InlineKeyboardButton(text='что-то важное', callback_data='affair')
         keyboard.add(kb_1, kb_2)
-        # if message.text:
         delet = bot.send_message(message.chat.id, 'Выберите предмет: ', reply_markup=keyboard)
         new_users(message)
         users()[message.from_user.first_name].append(delet.id)
-        # for_delet().append(delet.message_id)
         if message.text:
             for_text().append(message.text)
         else:
             id_photo().append(message.id)
-        # else:
-        #     delet = bot.send_message(1116709501, 'Выберите предмет: ', reply_markup=keyboard)
-        #     for_delet().append(delet.message_id)
 
 
         global c
@@ -367,15 +317,12 @@ def returs(message):
     try:
         bot.delete_message(chat_id=message.from_user.id, message_id=users()[message.from_user.first_name][0])
 
-    # del for_text()[0]
         for_text().clear()
-        # del for_delet()[0]
 
         users()[message.from_user.first_name].clear()
 
     except:
         bot.send_message(message.from_user.id, 'Время вышло')
-    # for_delet().clear()
     global c
     c = False
 
@@ -393,7 +340,6 @@ def photo_dop_home(message):
         new_users(message)
         users()[message.from_user.first_name].append(delet.id)
 
-        # dop_delet().append(delet.id)
         delet = bot.send_message(message.from_user.id, homeworks()[message.data])
         users()[message.from_user.first_name].append(delet.id)
         users()[message.from_user.first_name].append(delet_2.id)
@@ -418,7 +364,6 @@ def home_podrob(message):
     new_users(message)
     users()[message.from_user.first_name].append(delet.id)
 
-    # dop_delet().append(delet.id)
     
 
 
@@ -426,10 +371,7 @@ def home_podrob(message):
 @bot.callback_query_handler(func=lambda message: message.data in items and c == True)
 def homeworker(message):
     print(message.data)
-    # delete_message()
-    # users()[message.from_user.first_name].clear()
     print(users())
-    # if users()[message.from_user.first_name]:
     try:
         bot.delete_message(chat_id=message.from_user.id, message_id=users()[message.from_user.first_name][0])
     except: pass
@@ -451,20 +393,10 @@ def homeworker(message):
     cur.execute(update, value)
     conn.commit()
 
-
-    
-
-    # del for_delet()[0]
-    
-    
-
     global c
     c = False
 
-
-
-
-# try:
-bot.polling(none_stop=False)
-# except:
-#     time.sleep(5)
+try:
+    bot.polling(none_stop=False)
+except:
+    time.sleep(5)
