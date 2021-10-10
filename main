@@ -1,3 +1,10 @@
+@bot.message_handler(commands=["code"])
+def print_code(message):
+    keyboard = InlineKeyboardMarkup(row_width=3)
+    kb = InlineKeyboardButton(text='Перейти', url='https://github.com/Odinson137/schedule/tree/main')
+    keyboard.add(kb)
+    bot.send_message(message.chat.id, 'Код бота schedule', reply_markup=keyboard)
+
 def deleter(message):
           
         if len(for_home()) != 0:
