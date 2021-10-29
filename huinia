@@ -1,4 +1,26 @@
+def schedule_sl(sl = {}):
+    return sl
+
+# def homework_sl(sl = {}):
+#     return sl
+
+# print(schedule_sl()[1].values())
+# schedule().update({'14':14})
+# print(schedule())
+
+
 def users(sl = {}):
+    return sl
+
+# def for_delet(spisok = []):
+#     if len(spisok) > 1:
+#         del spisok[0]
+#     return spisok
+
+def affairs_sl(sl = {}):
+    return sl
+
+def writer_mod(sl = {}):
     return sl
 
 def delet_photo(sp = []):
@@ -7,6 +29,9 @@ def delet_photo(sp = []):
 
 def for_dop_delet(sp = []):
     return sp
+
+# def id_chat(spisok=[1116709501]):
+#     return spisok
 
 def for_text(spisok = []):
     if len(spisok) > 1:
@@ -21,8 +46,11 @@ def id_photo(sp = []):
         del sp[0]
     return sp
 
-def photo_dop(sl = {1:2}):
+def photo_dop(sl = {}):
     return sl
 
 def homeworks(sl = {}):
     return sl
+
+# def dop_delet(sp = []):
+    return sp
