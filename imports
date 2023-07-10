@@ -1,9 +1,0 @@
-from os import replace
-from time import time
-from telebot import types
-import logging
-import telebot
-import re
-import psycopg2
-import datetime
-import time
